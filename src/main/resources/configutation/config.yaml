@@ -1,0 +1,34 @@
+http:
+  protocol: "HTTP"
+  host: "0.0.0.0"
+  port: "8081"
+  
+sapi:
+  protocol: "HTTP"
+  host: "sapi-student-counselling.us-e2.cloudhub.io"
+  port: "80"
+  endpoints:
+    student: "/student"
+    college: "/college"
+    enrolment: "/enrolment"
+
+papi:
+  protocol: "HTTP"
+  host: "papi-student-counselling.us-e2.cloudhub.io"
+  port: "80"
+  endpoints:
+    enroller: "/enroller"
+ 
+mongo:
+  username: "MuleIntern2022"
+  password: "vLhoBp7TxmW2opuV"
+  dbname: "counselling_data"
+  college_collection:
+    name: "college_details"
+    fields: "id,name,criteria,seatsAvailable,seatsDetails"
+  student_collection:
+    name: "student_details"
+    fields: "uid,fname,lname,sex,caste,dob,address,contactDetails,educationDetails"
+  enrolment_collection:
+    name: "enrolment_details" 
+    fields: "student_id,assigned_id,college_details"

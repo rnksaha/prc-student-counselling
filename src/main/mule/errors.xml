@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<error-handler name="globalError_Handler" doc:id="42ccd76f-b37c-43fb-9ef8-ed07540bc89f" >
+		<on-error-propagate type="APIKIT:BAD_REQUEST, APIKIT:NOT_FOUND, APIKIT:METHOD_NOT_ALLOWED, APIKIT:NOT_ACCEPTABLE, APIKIT:UNSUPPORTED_MEDIA_TYPE, APIKIT:NOT_IMPLEMENTED" enableNotifications="true" logException="true">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{error_message: error.description}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fe9c78fe-9d9f-4a83-9aab-a4007344ffde" type="APP:DUPLICATE_ENROLMENT, APP:ENROLMENT_CRITERIA_FAIL">
+			<ee:transform doc:name="Transform Message" doc:id="1a10525a-d336-40ed-8abd-60a4b493a752" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error_message": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3aa54d67-5fd8-4f67-b41a-ca0981738e06" type="HTTP:CONNECTIVITY, HTTP:INTERNAL_SERVER_ERROR, HTTP:NOT_FOUND">
+			<ee:transform doc:name="Transform Message" doc:id="5617dea5-7572-4a33-9e78-66f880306146" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error_message": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b500baa5-91b8-4f77-b3ef-91b0ef15395e" type="OS:INVALID_KEY, OS:KEY_NOT_FOUND, OS:STORE_NOT_AVAILABLE">
+			<ee:transform doc:name="Transform Message" doc:id="5c8a56ef-2628-4843-87e5-4617f7179f71" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error_message": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c68efe25-f996-4cbc-82aa-6244a38b6c4f" type="APP:STUDENT_ID_NOT_FOUND" >
+			<ee:transform doc:name="Transform Message" doc:id="d3477b9b-91f1-4f36-a320-723dcc0f9657" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	error_message: "Student ID not found"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a1022b69-e041-4841-8189-d67e33970952" type="APP:COLLEGE_ID_NOT_FOUND" >
+			<ee:transform doc:name="Transform Message" doc:id="3f7b4c14-e0cc-425f-92f1-9672895acb85" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	error_message: "College ID not found"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="971a5575-b268-4c0f-9899-a5eefb31caca" type="ANY" >
+			<ee:transform doc:name="Transform Message" doc:id="7634dacc-680d-450b-88c9-e93e172a7879" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error_message": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

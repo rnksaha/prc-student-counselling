@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	 <http:listener-config name="papi-student-counselling-httpListenerConfig">
+        <http:listener-connection host="${http.host}" port="${http.port}" protocol="${http.protocol}"/>
+    </http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="cc7bf45d-ed56-4d47-a7a2-04a2f9abfb59" file="configutation\config.yaml" />
+	<mongo:config name="MongoDB_Config" doc:name="MongoDB Config" doc:id="1edf739b-3c22-46e8-abff-78b4fbb2cbe1" >
+		<mongo:connection-string-connection connectionString="mongodb+srv://${mongo.username}:${mongo.password}@cluster0.j3i2h.mongodb.net/${mongo.dbname}" />
+	</mongo:config>
+	<os:config name="ObjectStore_Config" doc:name="ObjectStore Config" doc:id="6c03ec1f-82f5-4128-835a-60d69d1e7f33" >
+		<os:connection >
+			<reconnection >
+				<reconnect />
+			</reconnection>
+		</os:connection>
+	</os:config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="1e3df4c0-a274-4ce3-bbfa-5c4be32ecbd4" maxEntries="1" entryTtl="30" entryTtlUnit="DAYS" expirationInterval="10" config-ref="ObjectStore_Config" />
+	<http:request-config name="SAPI_HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="e34841ff-5ac4-4452-8ec0-ea6c4d121343" basePath="/api" >
+		<http:request-connection host="${sapi.host}" port="${sapi.port}" protocol="${sapi.protocol}">
+			<reconnection >
+				<reconnect />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	<apikit:config name="papi-student-counselling-config" api="papi-student-counselling.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<configuration doc:name="Configuration" doc:id="4187d0e3-4f79-452d-bc54-6c2ec6f460bd" defaultErrorHandler-ref="globalError_Handler" />
+</mule>

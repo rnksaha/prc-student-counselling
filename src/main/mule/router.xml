@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    
+    <flow name="papi-student-counselling-main">
+        <http:listener config-ref="papi-student-counselling-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <set-variable value="#[attributes]" doc:name="vAttributes" doc:id="e6684d69-ee7e-4ff1-a946-889ea05282f9" variableName="vAttributes"/>
+		<set-variable value="#[payload]" doc:name="vPayload" doc:id="c8ef3b80-8f4e-48c6-85a5-33ca18e68d95" variableName="vPayload"/>
+		<apikit:router config-ref="papi-student-counselling-config" />
+    </flow>
+    <flow name="post:\enroller:application\json:papi-student-counselling-config">
+        <flow-ref doc:name="enrollerSub_Flow" doc:id="f935da32-b996-445f-9614-9fe57c38fc17" name="enrollerSub_Flow" />
+    </flow>
+	<flow name="get:\ping:papi-student-counselling-config">
+		<flow-ref doc:name="Flow Reference" doc:id="ef948450-015f-4a07-aff6-51033abfc925" name="healthcheckSub_Flow"/>
+    </flow>
+</mule>

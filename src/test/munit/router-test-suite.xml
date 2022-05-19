@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="router-test-suite.xml" />
+	<munit:test name="router-test-main" doc:id="3db1accc-2d43-4d9d-b64a-7129332a9a9b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="apikit-router" doc:id="47bdcbc8-f023-4652-9798-830aabb02e43" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="papi-student-counselling-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="vAttributes,vPayload" doc:id="3cbab737-1080-461d-8588-7806e8f1fb67" >
+				<munit:variables >
+					<munit:variable key="vAttributes" value="#[MunitTools::getResourceAsString('test_modules/vAttributes.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/vPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="papi-student-counselling-main" doc:id="a58a8094-f9d5-4a17-a83f-c4166c279a25" name="papi-student-counselling-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="router-test-suite-get:\ping" doc:id="538b39b9-6e58-41ea-9a30-c5090806bb32" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="ping" doc:id="81712662-0a84-4842-859e-1b8311e82c29" name="get:\ping:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="090cf284-997b-4813-baad-0041478ee50b" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="router-test-main-error" doc:id="bd117bf2-3cf9-4e65-8b89-882e6a65e4b3" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="apikit-router" doc:id="b4669755-9bac-459b-8c3e-792939e106f6" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="papi-student-counselling-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="vAttributes,vPayload" doc:id="6e2b8f27-272a-4e08-adf8-c495394574a6" >
+				<munit:variables >
+					<munit:variable key="vAttributes" value="#[MunitTools::getResourceAsString('test_modules/vAttributes.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/vPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="papi-student-counselling-main" doc:id="42785c5a-58db-4508-8c17-476f9f45f611" name="papi-student-counselling-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="router-test-suite-post:\enroller" doc:id="e0f834c5-ad8e-4c19-a6f1-2dde9fee0f6b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getStudentDetails" doc:id="635e5a10-9fb7-477e-96ae-a2f305062ca7" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getStudentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getEnrolmentDetails" doc:id="b65b0ba2-ca0d-46d3-9652-16dcdfacbd44" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getEnrolmentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getCollegeDetails" doc:id="cf4ab54f-6139-4a02-8c44-7b0a0038221f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getCollegeDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="os:retrieve" doc:id="7976dfca-ca54-4dd9-b612-6e53ffd8dea2" processor="os:retrieve">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e743eed9-1017-428d-8511-bd29c454aeba" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="addEnrolment" doc:id="91d418da-c835-49f3-9393-01029e636364" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Add enrolment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="os:store" doc:id="ad94dc73-c016-4917-8fc6-6a6ad2cc3abe" processor="os:store">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="90879ad6-b2a5-4df3-a7cc-c545e73586de" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="updateAvailability" doc:id="e1fe6a53-9340-4cb2-b91a-78f6bffbdf05" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update Availability" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="setting variables" doc:id="66ae28b5-3e31-4db4-b615-76587118177a" >
+				<munit:variables >
+					<munit:variable key="vFlag" value='{"vFlag"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/vPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="sDetails" value="#[MunitTools::getResourceAsString('test_modules/stuData.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="cDetails" value="#[MunitTools::getResourceAsString('test_modules/cDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vRequestEnrolment" value="#[MunitTools::getResourceAsString('test_modules/vRequestEnrolment.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="assigned_id" value="5236401475" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\enroller" doc:id="a9782ce3-ba96-4c19-9277-95122c72fae1" name="post:\enroller:application\json:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d2c6c4b5-eeb5-4af2-a525-998333d8019b" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="router-test-suite-post:\enroller:student-already-enrolled" doc:id="81956a35-7ec0-46b6-8b22-51706a58fc9e" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getStudentDetails" doc:id="0b4fc46a-c584-4596-b4b2-b625d9ab05b0" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getStudentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getEnrolmentDetails" doc:id="a0d7a413-edc6-4638-91a4-2c4f0186b5b1" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getEnrolmentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getCollegeDetails" doc:id="d300a35e-bb16-4eb5-934e-cf4203d04379" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getCollegeDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APP:ENROLMENT_CRITERIA_FAIL" />
+				</munit-tools:then-return>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="os:retrieve" doc:id="3116398d-0ff3-415c-8db2-c8d927bccaca" processor="os:retrieve" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e743eed9-1017-428d-8511-bd29c454aeba" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Add enrolment" doc:id="0b9df7ec-857b-45f6-abf2-3bf6da987e1d" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Add enrolment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="os:store" doc:id="33cc06cd-0299-4a56-b642-a0b42cedf172" processor="os:store" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="90879ad6-b2a5-4df3-a7cc-c545e73586de" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Update Availability" doc:id="f56520d4-8e3b-4f8e-8fc6-484f9503c6a8" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update Availability" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Setting variables" doc:id="cae04cd6-5e60-48cf-88f1-fba0b74b591f" >
+				<munit:variables >
+					<munit:variable key="vFlag" value='{"vFlag"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/vPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="sDetails" value="#[MunitTools::getResourceAsString('test_modules/stuData.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="cDetails" value="#[MunitTools::getResourceAsString('test_modules/cDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vRequestEnrolment" value="#[MunitTools::getResourceAsString('test_modules/vRequestEnrolment.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="assigned_id" value="5236401475" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\enroller" doc:id="5d4cfa09-05e5-494b-bd04-39064ef59b21" name="post:\enroller:application\json:papi-student-counselling-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="87eb03a9-3166-4ba2-abbe-f8c4c6f66bde" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="router-test-suite-post:\enroller:college-id-not-found" doc:id="dd184448-ebfa-4de7-b71b-9e6a17d5d7e7" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getStudentDetails" doc:id="5e00b4f8-b0fd-4177-b52e-11c3a0a24ad0" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getStudentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getEnrolmentDetails" doc:id="a75a1000-0a69-4e3c-8914-f63bee09c57c" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getEnrolmentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getCollegeDetails" doc:id="a2f245c1-69ab-4195-aa60-23e73dbcee54" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getCollegeDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APP:COLLEGE_ID_NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="os:retrieve" doc:id="912d5437-dc13-4e7d-96ad-5612b386ed61" processor="os:retrieve" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e743eed9-1017-428d-8511-bd29c454aeba" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Add enrolment" doc:id="99297ad9-2a93-46e8-986c-c9f83613f2af" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Add enrolment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="os:store" doc:id="82bbc048-f8f3-4d4f-bf36-2c6d29c4d5dd" processor="os:store" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="90879ad6-b2a5-4df3-a7cc-c545e73586de" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Update Availability" doc:id="48d30ac4-5f9b-4625-b4ab-103afe26a92c" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update Availability" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Settings variables" doc:id="710a748a-0e87-4a5f-a420-74d6f35e119d" >
+				<munit:variables >
+					<munit:variable key="vFlag" value='{"vFlag"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/vPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="sDetails" value="#[MunitTools::getResourceAsString('test_modules/stuData.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="cDetails" value="#[MunitTools::getResourceAsString('test_modules/cDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vRequestEnrolment" value="#[MunitTools::getResourceAsString('test_modules/vRequestEnrolment.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="assigned_id" value="5236401475" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\enroller" doc:id="709b6550-e0f6-411d-a4ad-3d31c3a1c083" name="post:\enroller:application\json:papi-student-counselling-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="74af13a0-5455-4efc-9217-0fa596bbb3ac" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,11 @@
+{
+  "enrolment_message": "Congratulations, you have been successfully enrolled",
+  "enrolment_details": {
+    "student_id": "5458726901",
+    "assigned_id": "IT5236401475",
+    "college_details": {
+      "college_id": "MDR5487120",
+      "department": "IT"
+    }
+  }
+}

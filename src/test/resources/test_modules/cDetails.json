@@ -1,0 +1,104 @@
+{
+    "_id": {
+        "$oid": "62794c5a00b82c1ecef55e4e"
+    },
+    "id": "JAU5952885",
+    "name": "Presidency University",
+    "criteria": {
+        "gen": {
+            "maxRank": 97161,
+            "minScore": 20
+        },
+        "sc": {
+            "maxRank": 161044,
+            "minScore": 55
+        },
+        "st": {
+            "maxRank": 340801,
+            "minScore": 45
+        }
+    },
+    "seatsAvailable": 398,
+    "seatsDetails": {
+        "CSE": {
+            "totalSeats": 95,
+            "reserve": {
+                "gen": {
+                    "noOfSeat": 24
+                },
+                "sc": {
+                    "noOfSeat": 38
+                },
+                "st": {
+                    "noOfSeat": 33
+                }
+            }
+        },
+        "IT": {
+            "totalSeats": 101,
+            "reserve": {
+                "gen": {
+                    "noOfSeat": 33
+                },
+                "sc": {
+                    "noOfSeat": 36
+                },
+                "st": {
+                    "noOfSeat": 32
+                }
+            }
+        },
+        "CE": {
+            "totalSeats": 100,
+            "reserve": {
+                "gen": {
+                    "noOfSeat": 34
+                },
+                "sc": {
+                    "noOfSeat": 30
+                },
+                "st": {
+                    "noOfSeat": 36
+                }
+            }
+        },
+        "ME": {
+            "totalSeats": 95,
+            "reserve": {
+                "gen": {
+                    "noOfSeat": 26
+                },
+                "sc": {
+                    "noOfSeat": 33
+                },
+                "st": {
+                    "noOfSeat": 36
+                }
+            }
+        },
+        "ECE": {
+            "totalSeats": 95,
+            "reserve": {
+                "gen": {
+                    "noOfSeat": 26
+                },
+                "sc": {
+                    "noOfSeat": 33
+                },
+                "st": {
+                    "noOfSeat": 36
+                }
+            }
+        }
+    },
+    "address": {
+        "street": "01 Helena Circle",
+        "city": "Oakland",
+        "state": "California",
+        "postalCode": "654654"
+    },
+    "contactDetails": {
+        "email": "vbyron0@hubpages.com",
+        "phone": "033-22901931"
+    }
+}

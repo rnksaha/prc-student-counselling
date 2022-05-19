@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
+	<sub-flow name="enrollerSub_Flow" doc:id="ef304f71-ecf4-4238-960c-7c8e2159bae6" >
+		<logger level="INFO" doc:name="flowStartLogger" doc:id="4b010208-9f7c-44f5-a317-41d0de6f0f14" message="Flow started successfully"/>
+		<flow-ref doc:name="checkEnrolmentDetailsSub_Flow" doc:id="dc00adcc-3bba-4031-a6e9-e76e38e6f07d" name="checkEnrolmentDetailsSub_Flow"/>
+		<flow-ref doc:name="getStudentDetailsSub_Flow" doc:id="3256a612-9922-4f52-b698-c5d9c998a9e8" name="getStudentDetailsSub_Flow" />
+		<flow-ref doc:name="checkIndexesSub_Flow" doc:id="1caf87f4-6769-4042-a069-4167aa3e95a9" name="checkIndexesSub_Flow"/>
+		<os:retrieve doc:name="Retrieve assigned_id" doc:id="e743eed9-1017-428d-8511-bd29c454aeba" key="assigned_id" objectStore="Object_store" target="assigned_id">
+			<error-mapping sourceType="OS:INVALID_KEY" targetType="APP:h" />
+			<error-mapping sourceType="OS:KEY_NOT_FOUND" targetType="APP:g" />
+			<error-mapping sourceType="OS:STORE_NOT_AVAILABLE" targetType="APP:f" />
+			<os:default-value ><![CDATA[1]]></os:default-value>
+		</os:retrieve>
+		<logger level="INFO" doc:name="assigned_id" doc:id="d093c198-91d3-459b-b3cc-24fb5fadd7bc" message="#[payload]"/>
+		<flow-ref doc:name="requestAddEnrolmentSub_Flow" doc:id="cd3b91bd-5ec7-482a-9239-6cd1506491fb" name="requestAddEnrolmentSub_Flow"/>
+		<os:store doc:name="Update assigned_id" doc:id="90879ad6-b2a5-4df3-a7cc-c545e73586de" key="assigned_id" objectStore="Object_store">
+			<os:value ><![CDATA[#[vars.assigned_id as Number + 1]]]></os:value>
+		</os:store>
+		<flow-ref doc:name="requestUpdateCollegeSub_Flow" doc:id="29e0008c-af91-49ec-9fa9-995336929f3a" name="requestUpdateCollegeSub_Flow"/>
+		<ee:transform doc:name="successMessage" doc:id="70b55788-4756-4569-b481-50d8007fc82a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "enrolment_message": "Congratulations, you have been successfully enrolled",
+  "enrolment_details": vars.vRequestEnrolment
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="flowEndLogger" doc:id="1ced0c17-2d4c-4c97-8058-c894265a389a" message="Flow ended successfully"/>
+	
+	
+</sub-flow>
+	<sub-flow name="getStudentDetailsSub_Flow" doc:id="f9b41b50-608f-41e2-9ebb-ab111c001be4">
+		<http:request method="GET" doc:name="getStudentDetails" doc:id="7a54c37d-6fa0-4776-a0b1-1f9f9f9925d1" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.student}" target="sDetails">
+				<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="APP:STUDENT_ID_NOT_FOUND" />
+			<reconnect />
+				<http:headers><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+				<http:query-params><![CDATA[#[{
+	"id": vars.vPayload.studentId
+}]]]></http:query-params>
+			</http:request>
+		<logger level="INFO" doc:name="responsePayload" doc:id="6883e153-7cc6-4a76-aa07-e4df129be48a" message="#[payload]" />
+	</sub-flow>
+	<sub-flow name="checkEnrolmentDetailsSub_Flow" doc:id="6050053b-ce93-4714-bfee-b4772c55e2a6">
+		<set-variable value="#[true]" doc:name="vFlag - T" doc:id="8e7e51af-e6d3-4188-9685-06b6c2c7ebcc" variableName="vFlag" />
+		<try doc:name="Try" doc:id="6a06c969-d856-4ce0-ae22-041ceb84ecb3">
+			<http:request method="GET" doc:name="getEnrolmentDetails" doc:id="d08eec11-4267-4c17-af76-fbbeeff40096" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.enrolment}">
+				<reconnect />
+				<http:headers><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+				<http:query-params><![CDATA[#[{
+	"id": vars.vPayload.studentId
+}]]]></http:query-params>
+			</http:request>
+			<logger level="INFO" doc:name="responsePayload" doc:id="ec743b4c-8b60-4659-853d-962a1eaaeda8" message="#[payload]" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e302c18b-5b79-4e9e-8778-43e902966f13" type="HTTP:INTERNAL_SERVER_ERROR">
+					<set-variable value="#[false]" doc:name="vFlag - F" doc:id="8e16e13c-d021-468f-9a37-59c75787d254" variableName="vFlag" />
+				</on-error-continue>
+			
+</error-handler>
+		</try>
+		<try doc:name="Try" doc:id="0e46cc7b-f9b5-4f8a-81a8-0e9f7a576d87">
+			<validation:is-false doc:name="vFlag ? F" doc:id="fd94c5ff-09bb-46b7-a851-d410bb5d0920" expression="#[vars.vFlag]" />
+			<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bd04d550-5360-49bb-91ee-bcf1224e9009" type="VALIDATION:INVALID_BOOLEAN">
+					<set-variable value="409" doc:name="httpStatus-409" doc:id="6582ffe2-fa1e-4073-b3d9-ec9bebeee5f6" variableName="httpStatus" />
+					<raise-error doc:name="APP:DUPLICATE_ENROLMENT" doc:id="700f229b-d460-400b-996e-1af1d9c049ba" type="APP:DUPLICATE_ENROLMENT" description="Student already enrolled" />
+				</on-error-propagate>
+
+			</error-handler>
+
+		</try>
+	</sub-flow>
+	<sub-flow name="checkIndexesSub_Flow" doc:id="a9675de3-8dcc-4de7-bc7d-ebbcc254e340">
+		<try doc:name="Try" doc:id="50cef2a4-e852-4b59-9c2b-b1479e397d62">
+			<foreach doc:name="For Each" doc:id="777dd2bf-646b-4e29-9c6b-8cecebde91aa" collection="#[vars.vPayload.collegeChoices]">
+				<logger level="INFO" doc:name="requestQueryParameter" doc:id="e4597f85-6bf9-428e-819e-c1234d696267" message="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.vPayload.collegeChoices[vars.counter-1].collegeId]" />
+				<http:request method="GET" doc:name="getCollegeDetails" doc:id="e788fc93-b271-40cb-8a58-50f6bf6a52df" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.college}" target="cDetails" outputMimeType="application/json">
+				<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="APP:COLLEGE_ID_NOT_FOUND" />
+					<reconnect />
+				<http:headers><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+				<http:query-params><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"id": vars.vPayload.collegeChoices[vars.counter-1].collegeId as String
+}]]]></http:query-params>
+			</http:request>
+				<logger level="INFO" doc:name="responsePayload" doc:id="8af9220c-8cf0-4f01-a291-46e8f3404506" message="#[payload]" />
+			<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.vPayload.collegeChoices[vars.counter-1].department as String]" doc:name="vDepartment" doc:id="43594179-7b1c-45f6-975d-41dd529be813" variableName="vDepartment" />
+			<ee:transform doc:name="setIndex" doc:id="0b165cbe-6a11-4f50-a801-f5ecae633635">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var caste = vars.sDetails.caste
+var dept = vars.vDepartment
+---
+{
+	"studentIndex": (vars.sDetails.educationDetails.hsScore as Number + ((1000000 - vars.sDetails.educationDetails.rank as Number)/1000000) *100)/2,
+	"collegeIndex": (vars.cDetails.criteria."$(caste)".minScore as Number + (1000000 - vars.cDetails.criteria."$(caste)".maxRank as Number)/1000000 * 100)/2,
+	"seatAvailable": vars.cDetails.seatsDetails."$(dept)".reserve."$(caste)".noOfSeat as Number > 0
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<try doc:name="Try" doc:id="a7252e75-1294-48cd-8418-542c8902fae9">
+					<validation:is-false doc:name="Criteria match and seats available?" doc:id="c7d70070-e2c6-4275-b5f7-841ec9692bbd" expression="#[payload.studentIndex&gt;=payload.collegeIndex and payload.seatAvailable]" />
+							<error-handler>
+								<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="62d872ff-7613-4a8c-8828-d8a6a84f4f2f" type="ANY">
+									<set-variable value="#[true]" doc:name="vFlag - T" doc:id="3b488c29-316e-4eae-ab76-054e311ba818" variableName="vFlag" />
+							<logger level="INFO" doc:name="Indexes" doc:id="84e9b5b1-a671-4b54-9510-6c5cfbabcc52" message="#[payload]" />
+								</on-error-continue>
+							</error-handler>
+					</try>
+				<try doc:name="Try" doc:id="edc69658-01a3-46b5-bf93-3f84bba9a60e">
+					<validation:is-false doc:name="vFlag ? F" doc:id="b95dc4b7-fef6-46b7-838e-da1787171745" expression="#[vars.vFlag]" />
+					<error-handler>
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e1aa4a78-13f4-485c-a774-e79e5fca93bf" type="ANY">
+							<raise-error doc:name="APP:MATCHING_COLLEGE_FOUND" doc:id="f46cded9-a943-4787-8cd2-d8df808b1d9d" type="APP:MATCHING_COLLEGE_FOUND" description="Matching criteria college found" />
+						</on-error-propagate>
+					</error-handler>
+				</try>
+		</foreach>
+			<set-variable value="412" doc:name="httpStatus - 412" doc:id="5385ed16-0e2f-4dc7-89b0-432c417b35f8" variableName="httpStatus" />
+			<raise-error doc:name="APP:ENROLMENT_CRITERIA_FAIL" doc:id="15b7cc2c-e0a0-48b3-9ff1-cd4df4fdddcf" type="APP:ENROLMENT_CRITERIA_FAIL" description="No available seats or criteria for requested colleges too high" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="919ac44a-2420-4a11-bb15-1363baf1ab43" type="APP:MATCHING_COLLEGE_FOUND">
+					<logger level="INFO" doc:name="Indexes" doc:id="6c7c3aa6-a0c8-4326-b4d1-a252582de9cf" message="#[payload]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="requestAddEnrolmentSub_Flow" doc:id="14244b5d-6dae-46f7-b796-87f2e7bc9452">
+		<ee:transform doc:name="vRequestEnrolment" doc:id="c01d8675-76e0-44de-a18a-4138894ade0b">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="vRequestEnrolment"><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "student_id": vars.vPayload.studentId,
+  "assigned_id": vars.vDepartment ++ vars.assigned_id as String,
+  "college_details": {
+  	"college_id": vars.cDetails.id,
+    "department": vars.vDepartment
+  }
+}]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+		<http:request method="POST" doc:name="Add enrolment" doc:id="0cf79447-04ce-415d-b872-b37c387f766b" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.enrolment}">
+			<http:body><![CDATA[#[vars.vRequestEnrolment]]]></http:body>
+				<http:headers><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="responsePayload" doc:id="be721c96-e35b-45e4-8b07-3933b91fddf0" message="#[payload]" />
+	</sub-flow>
+	<sub-flow name="requestUpdateCollegeSub_Flow" doc:id="de9eea40-609b-461a-a6b0-c4577b1e66d3">
+		<ee:transform doc:name="vRequestUpdate" doc:id="8215ca35-50d3-45cc-a65a-eda0b39cd7f6">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="vRequestUpdate"><![CDATA[%dw 2.0
+output application/json
+var caste = vars.sDetails.caste as String
+var dept = vars.vDepartment
+--- 
+(vars.cDetails) update {
+    case seatsAvailable at .seatsAvailable -> vars.cDetails.seatsAvailable - 1
+    case totalSeats at .seatsDetails."$(dept)".totalSeats -> vars.cDetails.seatsDetails."$(dept)".totalSeats - 1
+    case noOfSeat at .seatsDetails."$(dept)".reserve."$(caste)".noOfSeat -> vars.cDetails.seatsDetails."$(dept)".reserve."$(caste)".noOfSeat - 1
+}
+]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+		<http:request method="PATCH" doc:name="Update Availability" doc:id="1f1bea71-c4e8-4ac1-ac81-61eca1a7e72a" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.college}">
+			<http:body><![CDATA[#[vars.vRequestUpdate]]]></http:body>
+				<http:headers><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="responsePayload" doc:id="ecc35360-2e5d-4392-af5a-d5979b737fbe" message="#[payload]" />
+	</sub-flow>
+</mule>

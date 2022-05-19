@@ -1,0 +1,5 @@
+%dw 2.0
+
+type auto_f9b41b50_608f_41e2_9ebb_ab111c001be4_Input_Variables_currentID = {|  |} {"typeAlias": "Serializable",
+"typeId": "java.io.Serializable"}
+

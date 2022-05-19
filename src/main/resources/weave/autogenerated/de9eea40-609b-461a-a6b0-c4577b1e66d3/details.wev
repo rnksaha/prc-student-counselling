@@ -1,0 +1,11 @@
+%dw 2.0
+
+type auto_de9eea40_609b_461a_a6b0_c4577b1e66d3_Output_Variables_enrolment_details = {|
+  student_id: Null, 
+  assigned_id: String, 
+  college_details: {|
+    college_id: Any, 
+    department: String
+  |}
+|}
+

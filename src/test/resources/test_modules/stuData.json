@@ -1,0 +1,24 @@
+{
+  "_id": {
+    "$oid": "6270d2b28e937ad90a1c230c"
+  },
+  "uid": "3490804030",
+  "fname": "Aubrette",
+  "lname": "Roches",
+  "caste": "sc",
+  "dob": "1995-09-30",
+  "address": {
+    "street": "838 Sunbrook Court",
+    "city": "Bicesse",
+    "state": "Lisboa",
+    "postalCode": "315268"
+  },
+  "contactDetails": {
+    "email": "aroches1@biglobe.ne.jp",
+    "phone": "6589723231"
+  },
+  "educationDetails": {
+    "hsScore": 60.0,
+    "rank": 40000
+  }
+}

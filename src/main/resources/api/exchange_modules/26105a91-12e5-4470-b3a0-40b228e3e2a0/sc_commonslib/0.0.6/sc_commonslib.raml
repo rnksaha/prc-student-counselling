@@ -1,0 +1,274 @@
+#%RAML 1.0 Library
+
+traits:
+  client_id_required:
+    headers:
+      client_id:
+        type: string
+      client_secret:
+        type: string
+    responses:
+      401:
+        description: Invalid credentials
+        body:
+            application/json:
+              example:  {"error_message": "Unauthorized, Invalid credentials"}
+
+  rate_limiting:
+    responses:
+      429:
+        description: Rate limited
+        body:
+            application/json:
+              example:  {"error_message": "Too many requests, try later"}
+
+  database_prereq:
+    responses:
+      404:
+        description: Cannot find collection in database
+        body:
+            application/json:            
+              type: error_response
+              example: {"error_message": "Collection does not exist"}
+      503:
+        description: Cannot connect to database
+        body:
+            application/json:              
+              type: error_response
+              example: {"error_message": "Service unavailable"}
+
+types:
+  error_response:
+    description: The standard error response
+    type: object
+    properties:
+      error_message:
+        type: string
+        maxLength: 200
+
+  success_response:
+    description: The standard success response
+    type: object
+    properties:
+      success_message:
+        type: string
+        maxLength: 200
+
+  student_request:
+    description: Enrolment request by student
+    type: object
+    properties:
+      studentId:
+        type: string
+        maxLength: 10
+        pattern: ^[A-Z0-9]*$
+      collegeChoices:
+        type: array
+        items: request_college
+
+  request_college:
+    type: object
+    properties:
+      collegeId:
+        type: string
+        maxLength: 10
+        pattern: ^[A-Z0-9]*$
+      department:
+        type: deptTypes
+
+  college_type:
+    description: Individual college data
+    type: object
+    properties: 
+      id: 
+        type: string
+        maxLength: 10
+        pattern: ^[A-Z0-9]*$
+      name:
+        type: string
+        maxLength: 100
+      criteria:
+        type: object
+        properties:
+          gen:
+            type: casteDetails
+          sc:
+            type: casteDetails
+          st:
+            type: casteDetails
+      seatsAvailable:
+        type: number
+      seatsDetails:
+        type: object
+        properties:
+          CSE:
+            type: deptDetails
+          ECE:
+            type: deptDetails
+          IT:
+            type: deptDetails
+          CE:
+            type: deptDetails
+          ME:
+            type: deptDetails
+      address:
+        type: object
+        properties:
+          street:
+            type: string
+            maxLength: 100
+          city:
+            type: string
+            maxLength: 50
+          state:
+            type: string
+            maxLength: 50
+          postalCode:
+            type: string
+            maxLength: 15
+      contactDetails:
+        type: object
+        properties:
+          email:
+            type: string
+            maxLength: 100
+            pattern: ^.+@.+\..+$
+          phone:
+            type: string
+            maxLength: 15
+
+  student_type:
+    description: Individual student data
+    type: object
+    properties: 
+      uid: 
+        type: string      
+        maxLength: 10
+        pattern: ^[A-Z0-9]*$
+      fname:
+        type: string
+        maxLength: 50
+      mname: 
+        type: string
+        required: false
+        maxLength: 50
+      lname: 
+        type: string
+        maxLength: 50
+      sex:
+        type: string
+        required: false
+        maxLength: 15
+      caste:
+        type: casteTypes
+      dob: 
+        type: date-only
+      address:
+        type: object
+        properties:
+          street:                 
+            type: string        
+            maxLength: 70
+          city: 
+            type: string
+            maxLength: 45
+          state:
+            type: string
+            maxLength: 20
+          postalCode: 
+            type: string
+            maxLength: 15
+      contactDetails:
+        type: object
+        properties:
+          email:
+            type: string
+            required: false
+            maxLength: 100
+            pattern: ^.+@.+\..+$
+          phone:
+            type: string
+            maxLength: 15
+      educationDetails:
+        type: object
+        properties:
+          hsScore:
+            type: number
+            minimum: 0
+            maximum: 100
+            multipleOf: 0.01
+          rank:
+            type: number
+            minimum: 1
+
+  enrolment_type:
+    description: Individual enrolled student data
+    type: object
+    properties:
+      student_id:
+        type: string
+        maxLength: 10
+        pattern: ^[A-Z0-9]*$
+      assigned_id:
+        type: string
+        maxLength: 15
+        pattern: ^[A-Z0-9]*$
+      college_details:
+        type: object
+        properties:
+          college_id:
+            type: string
+            maxLength: 10
+            pattern: ^[A-Z0-9]*$
+          department:
+            type: deptTypes
+  
+  casteDetails:
+    description: Individual caste data
+    type: object
+    properties:
+      maxRank: 
+        type: number
+      minScore:
+        type: number
+        minimum: 0
+        maximum: 100
+  
+  deptDetails:
+    description: Individual department data
+    type: object
+    properties:
+      totalSeats:
+        type: number
+      reserve:
+        type: object
+        properties:
+          gen:
+            type: object
+            properties:
+              noOfSeat:
+                type: number
+          sc:
+            type: object
+            properties:
+              noOfSeat:
+                type: number
+          st:
+            type: object
+            properties:
+              noOfSeat:
+                type: number
+
+  casteTypes:
+    enum:
+      - gen
+      - sc
+      - st
+  
+  deptTypes:
+    enum:
+      - CSE
+      - IT
+      - ECE
+      - CE
+      - ME

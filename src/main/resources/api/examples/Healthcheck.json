@@ -1,0 +1,8 @@
+{
+  "module": "PAPI Student Counselling",
+  "projectVersion": "1.0.0",
+  "apiVersion": "1.0.0",
+  "env": "DEV",
+  "status": "200",
+  "message": "Alive"
+}
