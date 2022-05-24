@@ -11,8 +11,8 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
 	<sub-flow name="enrollerSub_Flow" doc:id="ef304f71-ecf4-4238-960c-7c8e2159bae6" >
 		<logger level="INFO" doc:name="flowStartLogger" doc:id="4b010208-9f7c-44f5-a317-41d0de6f0f14" message="Flow started successfully"/>
-		<flow-ref doc:name="checkEnrolmentDetailsSub_Flow" doc:id="dc00adcc-3bba-4031-a6e9-e76e38e6f07d" name="checkEnrolmentDetailsSub_Flow"/>
 		<flow-ref doc:name="getStudentDetailsSub_Flow" doc:id="3256a612-9922-4f52-b698-c5d9c998a9e8" name="getStudentDetailsSub_Flow" />
+		<flow-ref doc:name="checkEnrolmentDetailsSub_Flow" doc:id="dc00adcc-3bba-4031-a6e9-e76e38e6f07d" name="checkEnrolmentDetailsSub_Flow"/>
 		<flow-ref doc:name="checkIndexesSub_Flow" doc:id="1caf87f4-6769-4042-a069-4167aa3e95a9" name="checkIndexesSub_Flow"/>
 		<os:retrieve doc:name="Retrieve assigned_id" doc:id="e743eed9-1017-428d-8511-bd29c454aeba" key="assigned_id" objectStore="Object_store" target="assigned_id">
 			<error-mapping sourceType="OS:INVALID_KEY" targetType="APP:h" />
@@ -41,6 +41,11 @@ output application/json
 	
 	
 </sub-flow>
+	<sub-flow name="admissionProcessSub_Flow" doc:id="d5db339d-463b-4f41-a66c-dc1d0f0a2170" >
+		<logger level="INFO" doc:name="Logger" doc:id="57fe5466-75b6-423f-bbd0-5158da6f5976" />
+		<flow-ref doc:name="checkAdmissionDetailsSub_Flow" doc:id="56ae2eaa-b80e-4b7c-aa13-5abba349125b" name="checkAdmissionDetailsSub_Flow"/>
+		<flow-ref doc:name="requestAdmissionSub_Flow" doc:id="f5b96f2d-9652-4816-b61b-a3cb1dcf71f2" name="requestAdmissionSub_Flow"/>
+	</sub-flow>
 	<sub-flow name="getStudentDetailsSub_Flow" doc:id="f9b41b50-608f-41e2-9ebb-ab111c001be4">
 		<http:request method="GET" doc:name="getStudentDetails" doc:id="7a54c37d-6fa0-4776-a0b1-1f9f9f9925d1" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.student}" target="sDetails">
 				<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="APP:STUDENT_ID_NOT_FOUND" />
@@ -58,7 +63,7 @@ output application/json
 	<sub-flow name="checkEnrolmentDetailsSub_Flow" doc:id="6050053b-ce93-4714-bfee-b4772c55e2a6">
 		<set-variable value="#[true]" doc:name="vFlag - T" doc:id="8e7e51af-e6d3-4188-9685-06b6c2c7ebcc" variableName="vFlag" />
 		<try doc:name="Try" doc:id="6a06c969-d856-4ce0-ae22-041ceb84ecb3">
-			<http:request method="GET" doc:name="getEnrolmentDetails" doc:id="d08eec11-4267-4c17-af76-fbbeeff40096" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.enrolment}">
+			<http:request method="GET" doc:name="getEnrolmentDetails" doc:id="d08eec11-4267-4c17-af76-fbbeeff40096" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.enrolment}" target="vEnrollment">
 				<reconnect />
 				<http:headers><![CDATA[#[{
 	"client_id": vars.vAttributes.headers.client_id,
@@ -87,6 +92,100 @@ output application/json
 			</error-handler>
 
 		</try>
+	</sub-flow>
+	<sub-flow name="checkAdmissionDetailsSub_Flow" doc:id="6ebfdc4a-0d2e-447f-82e5-c58048261028" >
+		<set-variable value="#[true]" doc:name="vFlag2 - T" doc:id="e95c2c46-1873-47c3-a0f4-1cbb0c1ddbb6" variableName="vFlag2"/>
+		<try doc:name="Try" doc:id="a7dee422-5d82-4c77-a44c-f43a9fdbb6d6" >
+			<http:request method="GET" doc:name="getEnrollmentDetails" doc:id="5ba71b3c-e90b-47dd-b0ad-e4768c360521" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.enrolment}">
+				<http:headers ><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+				<http:query-params ><![CDATA[#[{
+	"id": vars.vPayload.student_id
+}]]]></http:query-params>
+			</http:request>
+			<logger level="INFO" doc:name="responsePayload" doc:id="424ada68-cede-4075-85de-1d7af8964b7b" message="#[payload]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8189a5d9-2284-4335-902e-db17d0c6fc03" type="HTTP:INTERNAL_SERVER_ERROR">
+					<ee:transform doc:name="Transform Message" doc:id="858087ad-d504-472c-8180-3421d6622063" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+"You are not enrolled! Please enroll first by hitting /enroll endpoint"]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<try doc:name="Try" doc:id="c0596865-23b7-4ace-b77f-bae79efbce03" >
+			<http:request method="GET" doc:name="getAdmissionDetails" doc:id="44e76f26-c5ab-47fb-b6be-18a2afc8400f" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.admission}">
+				<http:headers ><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+				<http:query-params ><![CDATA[#[{
+	"id": vars.vPayload.student_id
+}]]]></http:query-params>
+			</http:request>
+			<logger level="INFO" doc:name="responsePayload" doc:id="23dc3cbe-0ec5-4d4e-baf3-ee6abd4de50e" message="#[payload]"/>
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="746a45d7-8198-4173-8ef8-da241a4cc116" type="HTTP:INTERNAL_SERVER_ERROR">
+					<set-variable value="#[false]" doc:name="vFlag2 - F" doc:id="202f790d-1205-4fcc-9db1-cf17c03f88db" variableName="vFlag2"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<try doc:name="Try" doc:id="8a7ca896-258e-4e25-a56d-5871622a2ea3" >
+			<validation:is-false doc:name="vFlag2 ? F" doc:id="5c5d8058-b9af-4daf-bf48-fe85ed1ffa25" expression="#[vars.vFlag2]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7feae632-cace-4778-80af-a28ecf83235f" type="VALIDATION:INVALID_BOOLEAN">
+					<set-variable value="409" doc:name="httpStatus-409" doc:id="ccc4353f-3ff5-4c87-b6d8-5b22bada6686" variableName="httpStatus"/>
+					<raise-error doc:name="APP:DUPLICATE_ADMISSION" doc:id="c8d55887-adfb-473c-b3f7-82267080cfb4" type="APP:DUPLICATE_ADMISSION" description="Admission fees already paid"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="requestAdmissionSub_Flow" doc:id="3f9b9574-6385-4b36-b9b7-24d707aca059" >
+		<http:request method="GET" doc:name="getCollegeDetails" doc:id="cf5f7887-188c-455c-9c52-673c419e1544" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.college}" target="cDetails" outputMimeType="application/json">
+		<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="APP:COLLEGE_ID_NOT_FOUND" />
+					<reconnect />
+				<http:headers><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+				<http:query-params><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"id": vars.vPayload.college_details.college_id as String
+}]]]></http:query-params>
+			</http:request>
+		<try doc:name="Try" doc:id="493db21a-ca53-40f9-a904-5afe04bfd972" >
+			<validation:is-true doc:name="Check admission fees and payment" doc:id="84945a7d-cfb9-467f-8522-ef42416519e7" expression="#[vars.cDetails.admissionFees == vars.vPayload.admissionFees]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4483e51e-2e4f-4e1d-b33c-9ebc3304757e" type="VALIDATION:INVALID_BOOLEAN">
+					<ee:transform doc:name="Transform Message" doc:id="8c7e697a-a60f-4b61-84aa-8478fcd846ba" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Admission fee mismatch! Please pay the correct admission fee",
+	"Required Fee": vars.cDetails.admissionFees
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<http:request method="POST" doc:name="Admit Student" doc:id="6f1659b2-5db6-4c58-8455-8d91f356a0d5" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.admission}">
+			<http:body ><![CDATA[#[vars.vPayload]]]></http:body>
+			<http:headers ><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+		</http:request>
 	</sub-flow>
 	<sub-flow name="checkIndexesSub_Flow" doc:id="a9675de3-8dcc-4de7-bc7d-ebbcc254e340">
 		<try doc:name="Try" doc:id="50cef2a4-e852-4b59-9c2b-b1479e397d62">

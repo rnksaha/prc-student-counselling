@@ -136,6 +136,8 @@ types:
           phone:
             type: string
             maxLength: 15
+      admissionFees:
+        type: integer
 
   student_type:
     description: Individual student data
@@ -272,3 +274,52 @@ types:
       - ECE
       - CE
       - ME
+  library_type:
+    description: Individual students data who have issued library card
+    type: object
+    properties:
+      library_id:
+        type: string
+        maxLength: 20
+        pattern: ^[A-Z0-9]*$
+      student_id:
+        type: string
+        maxLength: 10
+        pattern: ^[A-Z0-9]*$
+      assigned_id:
+        type: string
+        maxLength: 15
+        pattern: ^[A-Z0-9]*$
+      college_details:
+        type: object
+        properties:
+          college_id:
+            type: string
+            maxLength: 10
+            pattern: ^[A-Z0-9]*$
+  admission_type:
+    description: Individual students data who have paid their admission fees
+    type: object
+    properties:
+      student_id:
+        type: string
+        maxLength: 10
+        pattern: ^[A-Z0-9]*$
+      assigned_id:
+        type: string
+        maxLength: 15
+        pattern: ^[A-Z0-9]*$
+      college_details:
+        type: object
+        properties:
+          college_id:
+            type: string
+            maxLength: 10
+            pattern: ^[A-Z0-9]*$
+      admissionStatus:
+        type: boolean
+      admissionFees:
+        type: integer
+
+
+

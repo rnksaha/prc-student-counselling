@@ -1,0 +1,155 @@
+#%RAML 1.0
+title: PAPI Student Counselling
+
+uses:
+  commons: /exchange_modules/26105a91-12e5-4470-b3a0-40b228e3e2a0/sc_commonslib/0.0.11/sc_commonslib.raml
+
+types:
+  enrolled_type: commons.enrolment_type
+  admission_type: commons.admission_type
+  library_type: commons.library_type
+
+/enroller:
+  is: 
+    - commons.client_id_required
+
+  post:
+    description: Enrollment Proccess
+    body:
+      application/json:
+        example: !include /examples/StudentRequest.json
+
+    responses:
+      201:
+        description: Enrolment successful
+        body:
+          application/json:
+            example: !include /examples/EnrolmentSuccess.json
+
+      404:
+        description: Student not found
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Requested student id not found"}
+
+      409:
+        description: Enrolment already exists
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Student already enrolled"}
+
+      412:
+        description: Enrolment failed for non matching conditions
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "No available seats or criteria for requested colleges too high"}
+
+      500:
+        description: Internal enrolment error
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Student enrolment failed, please try again later"}
+/admissionprocess:
+  is: 
+    - commons.client_id_required
+
+  post:
+    description: Admission Proccess
+    body:
+      application/json:
+        example: !include /examples/AdmissionRequest.json
+
+    responses:
+      201:
+        description: Admission Process successful
+        body:
+          application/json:
+            example: !include /examples/AdmissionSuccess.json
+
+      404:
+        description: Student  id not found
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Requested student id not found"}
+
+      409:
+        description: Admission/Payment already done
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Admission fees already paid"}
+
+      412:
+        description: Admission failed for non matching conditions
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Credentials or payment amount not matched "}
+
+      500:
+        description: Internal server error
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Student admission failed, please try again later"}
+
+/libregistration:
+  is: 
+    - commons.client_id_required
+
+  post:
+    description: Library Registration Proccess
+    body:
+      application/json:
+        example: !include /examples/LibRegistrationRequest.json
+
+    responses:
+      201:
+        description: Library Registration Process successful
+        body:
+          application/json:
+            example: !include /examples/LibRegistrationSuccess.json
+
+      404:
+        description: Student  id not found
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Requested student id not found"}
+
+      409:
+        description: Library registration already done
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Library card already issued"}
+
+      412:
+        description: Library registration failed for non matching conditions
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Library registration failed due to invalid credentials"}
+
+      500:
+        description: Internal server error
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Library registration failed, please try again later"}
+/ping:
+  get:
+    description: Healthcheck endpoint
+    responses:
+      200:
+        description: Healthcheck service online
+        body:
+          application/json:
+            example: !include /examples/Healthcheck.json
+        
+       

@@ -5,12 +5,15 @@ http:
   
 sapi:
   protocol: "HTTP"
-  host: "sapi-student-counselling.us-e2.cloudhub.io"
+  #host: "sapi-student-counselling.us-e2.cloudhub.io"
+  host: "sys-api-coun-v2.us-e2.cloudhub.io"
   port: "80"
   endpoints:
     student: "/student"
     college: "/college"
     enrolment: "/enrolment"
+    admission: "/admission"
+    library: "/library"
 
 papi:
   protocol: "HTTP"
