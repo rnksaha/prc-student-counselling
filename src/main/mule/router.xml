@@ -19,10 +19,10 @@
         <flow-ref doc:name="enrollerSub_Flow" doc:id="f935da32-b996-445f-9614-9fe57c38fc17" name="enrollerSub_Flow" />
     </flow>
     <flow name="post:\admissionprocess:application\json:papi-student-counselling-config">
-        <flow-ref doc:name="Flow Reference" doc:id="b3d45699-8d36-40bc-a34c-3c2ac19f5863" name="admissionProcessSub_Flow"/>
+        <flow-ref doc:name="admissionProcessSub_Flow" doc:id="b3d45699-8d36-40bc-a34c-3c2ac19f5863" name="admissionProcessSub_Flow"/>
     </flow>
     <flow name="post:\libregistration:application\json:papi-student-counselling-config">
-        <flow-ref doc:name="Flow Reference" doc:id="9bc8107b-f575-4dc6-bcea-abf498ff5d49" name="admissionProcessSub_Flow"/>
+        <flow-ref doc:name="libraryProcessSub_Flow" doc:id="9bc8107b-f575-4dc6-bcea-abf498ff5d49" name="libraryProcessSub_Flow"/>
     </flow>
 	<flow name="get:\ping:papi-student-counselling-config">
 		<flow-ref doc:name="Flow Reference" doc:id="ef948450-015f-4a07-aff6-51033abfc925" name="healthcheckSub_Flow"/>

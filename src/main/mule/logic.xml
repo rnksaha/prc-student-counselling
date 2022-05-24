@@ -33,7 +33,8 @@ output application/json
 ---
 {
   "enrolment_message": "Congratulations, you have been successfully enrolled",
-  "enrolment_details": vars.vRequestEnrolment
+  "enrolment_details": vars.vRequestEnrolment,
+  "further_process": "Now you can proceed with your admission and fee payment by hitting the endpoint /payment"
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -42,9 +43,35 @@ output application/json
 	
 </sub-flow>
 	<sub-flow name="admissionProcessSub_Flow" doc:id="d5db339d-463b-4f41-a66c-dc1d0f0a2170" >
-		<logger level="INFO" doc:name="Logger" doc:id="57fe5466-75b6-423f-bbd0-5158da6f5976" />
+		<logger level="INFO" doc:name="flowStartLogger" doc:id="57fe5466-75b6-423f-bbd0-5158da6f5976" message="Flow started successfully"/>
 		<flow-ref doc:name="checkAdmissionDetailsSub_Flow" doc:id="56ae2eaa-b80e-4b7c-aa13-5abba349125b" name="checkAdmissionDetailsSub_Flow"/>
 		<flow-ref doc:name="requestAdmissionSub_Flow" doc:id="f5b96f2d-9652-4816-b61b-a3cb1dcf71f2" name="requestAdmissionSub_Flow"/>
+		<ee:transform doc:name="successmessage" doc:id="a4f60fff-0994-426c-8fdd-65dccde0c054" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Payment successful, Now you can proceed with library card issuance by hitting /library_registration endpoint"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="libraryProcessSub_Flow" doc:id="98f4ba2d-b95e-403b-ba42-2e2ce862f59a" >
+		<logger level="INFO" doc:name="flowStartLogger" doc:id="7f312618-3e7e-41cb-a2e7-54ba39854905" message="Flow started successfully"/>
+		<flow-ref doc:name="checkLibraryDetailsSub_Flow" doc:id="1ce4934d-7cbf-4747-a4cb-d90d040dd9d6" name="checkLibraryDetailsSub_Flow"/>
+		<flow-ref doc:name="requestLibrarySub_Flow" doc:id="3a11b43b-deae-4670-9a14-4ae40d5e91b5" name="requestLibrarySub_Flow"/>
+		<ee:transform doc:name="successmessage" doc:id="e40656c4-9665-4f7f-a2d2-2e05181e655e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Library card issued successfully!",
+	"your library card details": vars.vLibData
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</sub-flow>
 	<sub-flow name="getStudentDetailsSub_Flow" doc:id="f9b41b50-608f-41e2-9ebb-ab111c001be4">
 		<http:request method="GET" doc:name="getStudentDetails" doc:id="7a54c37d-6fa0-4776-a0b1-1f9f9f9925d1" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.student}" target="sDetails">
@@ -108,14 +135,7 @@ output application/json
 			<logger level="INFO" doc:name="responsePayload" doc:id="424ada68-cede-4075-85de-1d7af8964b7b" message="#[payload]"/>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8189a5d9-2284-4335-902e-db17d0c6fc03" type="HTTP:INTERNAL_SERVER_ERROR">
-					<ee:transform doc:name="Transform Message" doc:id="858087ad-d504-472c-8180-3421d6622063" >
-						<ee:message >
-							<ee:set-payload ><![CDATA[%dw 2.0
-output text/plain
----
-"You are not enrolled! Please enroll first by hitting /enroll endpoint"]]></ee:set-payload>
-						</ee:message>
-					</ee:transform>
+					<raise-error doc:name="APP:NOT_ENROLLED" doc:id="2b6d29a4-8943-4b99-a63a-2f23e8ca4544" description="You are not enrolled! Please enroll first by hitting /enroll endpoint" type="APP:NOT_ENROLLED"/>
 				</on-error-propagate>
 			</error-handler>
 		</try>
@@ -186,6 +206,81 @@ output application/json
 	"client_secret": vars.vAttributes.headers.client_secret
 }]]]></http:headers>
 		</http:request>
+	</sub-flow>
+	<sub-flow name="checkLibraryDetailsSub_Flow" doc:id="ac57094d-51b8-499b-b1b3-733e31202e0a" >
+		<set-variable value="#[true]" doc:name="vFlag3 - T" doc:id="0197bca4-a977-4118-8164-0ad4bb1eb3e1" variableName="vFlag3"/>
+		<try doc:name="Try" doc:id="8844f2bf-42bf-4234-bf3c-03044ed06079" >
+			<http:request method="GET" doc:id="852b0026-7ab6-43aa-ac14-f67fb68b3ec2" doc:name="getAdmissionDetails" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.admission}" target="vAdmDetails">
+			<http:headers ><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+				<http:query-params ><![CDATA[#[{
+	"id": vars.vPayload.student_id
+}]]]></http:query-params>
+</http:request>
+			<logger level="INFO" doc:name="responsePayload" doc:id="cf8101bb-43e4-4305-9a74-20873b373084" message="#[payload]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="97500ac5-46a2-499a-9c98-c0714a8d4eba" type="HTTP:INTERNAL_SERVER_ERROR">
+					<raise-error doc:name="APP:FEE_NOT_PAID" doc:id="7c5025d5-615b-4800-ac11-9d9ad257f5ed" type="APP:FEE_NOT_PAID" description="You have not paid the admission fee, please pay the same by hidding /payment endpoint"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<try doc:name="Try" doc:id="ffbc7bef-013e-4a24-93df-534986cb753b" >
+			<http:request method="GET" doc:name="getLibraryDetails" doc:id="4b004d06-4277-4810-a04f-bbed884f6411" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.library}">
+				<http:headers ><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+				<http:query-params ><![CDATA[#[{
+	"id": vars.vPayload.student_id
+}]]]></http:query-params>
+			</http:request>
+			<logger level="INFO" doc:name="responsePayload" doc:id="1ababd6f-a084-460a-8614-ecf1e2c7fc8a" message="#[payload]"/>
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6e7d0520-9486-4432-8935-5fd487f35cd1" type="HTTP:INTERNAL_SERVER_ERROR">
+					<set-variable value="#[false]" doc:name="vFlag3 - F" doc:id="a0e5b675-8289-490e-85f6-be99c0198f31" variableName="vFlag3"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<try doc:name="Try" doc:id="68a0efcf-4a47-4254-a169-a9053c97e6c8" >
+			<validation:is-false doc:name="vFlag3 ? F" doc:id="cf6a1914-bbdc-4f6b-aa77-32c900c60a45" expression="#[vars.vFlag3]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="eddd202c-e1f4-4e2b-bf2d-fe377da59da1" type="VALIDATION:INVALID_BOOLEAN">
+					<set-variable value="409" doc:name="httpStatus-409" doc:id="67bd2047-57c9-48ba-9291-e70e25648a15" variableName="httpStatus"/>
+					<raise-error doc:name="APP:DUPLICATE_LIBRARY" doc:id="a7a77b66-93a1-48d6-b311-4392289689d7" type="APP:DUPLICATE_LIBRARY" description="Library card already issued"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="requestLibrarySub_Flow" doc:id="ff5a3387-a73b-44df-9dd5-b9ac728f2b60" >
+		<ee:transform doc:name="vLibData" doc:id="7ae8134e-5a4f-42a3-814a-2dcaa127b17a" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="vLibData" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"library_id": "LIB" ++ vars.vAdmDetails.assigned_id as String,
+    "student_id": vars.vPayload.student_id,
+    "assigned_id": vars.vAdmDetails.assigned_id,
+    "college_details": {
+
+      "college_id": vars.vAdmDetails.college_details.college_id
+      
+  }
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="Issue Library card" doc:id="43315f89-e82f-408f-8b0a-f253cd3eeac3" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.library}">
+			<http:body ><![CDATA[#[vars.vLibData]]]></http:body>
+			<http:headers ><![CDATA[#[{
+	"client_id": vars.vAttributes.headers.client_id,
+	"client_secret": vars.vAttributes.headers.client_secret
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="responsePayload" doc:id="ca34f301-e5e8-4fb7-971e-9b167eefbacb" message="#[payload]"/>
 	</sub-flow>
 	<sub-flow name="checkIndexesSub_Flow" doc:id="a9675de3-8dcc-4de7-bc7d-ebbcc254e340">
 		<try doc:name="Try" doc:id="50cef2a4-e852-4b59-9c2b-b1479e397d62">

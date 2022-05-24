@@ -19,7 +19,7 @@ output application/json
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fe9c78fe-9d9f-4a83-9aab-a4007344ffde" type="APP:DUPLICATE_ENROLMENT, APP:ENROLMENT_CRITERIA_FAIL">
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fe9c78fe-9d9f-4a83-9aab-a4007344ffde" type="APP:DUPLICATE_ENROLMENT, APP:ENROLMENT_CRITERIA_FAIL, APP:NOT_ENROLLED, APP:DUPLICATE_ADMISSION, APP:FEE_NOT_PAID, APP:DUPLICATE_LIBRARY">
 			<ee:transform doc:name="Transform Message" doc:id="1a10525a-d336-40ed-8abd-60a4b493a752" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
