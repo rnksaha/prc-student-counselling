@@ -185,7 +185,7 @@ output application/json
 			<validation:is-true doc:name="Check admission fees and payment" doc:id="84945a7d-cfb9-467f-8522-ef42416519e7" expression="#[vars.cDetails.admissionFees == vars.vPayload.admissionFees]"/>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4483e51e-2e4f-4e1d-b33c-9ebc3304757e" type="VALIDATION:INVALID_BOOLEAN">
-					<raise-error doc:name="APP:FEE_MISMATCH" doc:id="f3dbadf2-4fdb-4d8d-8508-96a3dfea53da" type="APP:FEE_MISMATCH" description="Admission fee mismatch! Please pay the correct admission fee"/>
+					<raise-error doc:name="APP:FEE_MISMATCH" doc:id="f3dbadf2-4fdb-4d8d-8508-96a3dfea53da" type="APP:FEE_MISMATCH" description="Admission fee mismatch! Please pay the correct admission fee i.e #[vars.cDetails.admissionFees]"/>
 				</on-error-propagate>
 			</error-handler>
 		</try>
@@ -388,5 +388,43 @@ var dept = vars.vDepartment
 }]]]></http:headers>
 		</http:request>
 		<logger level="INFO" doc:name="responsePayload" doc:id="ecc35360-2e5d-4392-af5a-d5979b737fbe" message="#[payload]" />
+	</sub-flow>
+	<sub-flow name="ping-invokeSub_Flow" doc:id="bd49a821-1b8f-4876-b625-9f2d23fbbb9e" >
+		<try doc:name="Try" doc:id="dccb1409-726c-425f-8219-63763fd3ee70" >
+			<http:request method="GET" doc:name="ping-request" doc:id="9a03290f-127e-4549-9c87-41cbbae44295" config-ref="SAPI_HTTP_Request_configuration" path="/ping" target="vDedicatedPing" >
+				<http:headers ><![CDATA[#[{
+	"client_id": attributes.headers.client_id,
+	"client_secret": attributes.headers.client_secret,
+	"x-dependent-ping" : true
+}]]]></http:headers>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="cbed2359-9bbf-452c-83ca-a28e6991f424" type="ANY">
+					<raise-error doc:name="Raise error" doc:id="c9cfb9e8-fd67-4d11-9264-f38e39db0afb" type="APP:PING_NOT_WORKING" description="Ping is not Working " />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="15939402-1335-49f7-bdaa-72cf2d8a8917" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "s-api-ping":vars.vDedicatedPing,
+  "p-api-ping":{
+  module: "${ping.module}",
+  projectVersion: "${ping.projectVersion}",
+  apiVersion: "${ping.apiVersion}",
+  env: "${ping.env}",
+  status: "${ping.status}",
+  message: "${ping.message}"
+  }
+  }
+  
+ 
+  ]]></ee:set-payload>
+			</ee:message>
+			<ee:variables />
+		</ee:transform>
 	</sub-flow>
 </mule>

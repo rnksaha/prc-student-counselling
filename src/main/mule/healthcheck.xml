@@ -4,21 +4,33 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<sub-flow name="healthcheckSub_Flow" doc:id="12fc50dd-e8d3-48f6-acd6-14d4c7349091" >
-		<ee:transform doc:name="Healthcheck" doc:id="db2ef8e3-acab-4b73-b47f-11db87e02c9f">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
+	<sub-flow name="healthCheckSub_Flow" doc:id="bd3659d1-3684-442d-8bc1-d82a2f8764b5" >
+		<choice doc:name="Choice" doc:id="934f692e-6077-41a3-bd42-f2dcc6ae160e" >
+			<when expression="#[attributes.headers.'x-dependent-ping' != null and attributes.headers.'x-dependent-ping' == &quot;true&quot;]" >
+				<flow-ref doc:name="ping-invokeSub_Flow" doc:id="87bdf8bc-aff6-4d14-9ab7-20dea5f1db4e" name="ping-invokeSub_Flow" />
+			</when>
+			<otherwise >
+				<ee:transform doc:name="healthCheck_Message" doc:id="1b52de9b-af1f-45cf-b736-0fb53b987cbc" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
+
 {
-  module: "PAPI Student Counselling",
-  projectVersion: "1.0.0",
-  apiVersion: "1.0.0",
-  env: "DEV",
-  status: "200",
-  message: "Alive"
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+	
+
+  module: "${ping.module}",
+  projectVersion: "${ping.projectVersion}",
+  apiVersion: "${ping.apiVersion}",
+  env: "${ping.env}",
+  status: "${ping.status}",
+  message: "${ping.message}"
+  
+  
+  }]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
 	</sub-flow>
 </mule>
