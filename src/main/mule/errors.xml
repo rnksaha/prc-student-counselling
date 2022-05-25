@@ -98,7 +98,7 @@ output application/json
 output application/java
 ---
 {
-	"message": error.description,
+	"error_message": error.description,
 	"Required Fee": vars.cDetails.admissionFees
 }]]></ee:set-payload>
 				</ee:message>
