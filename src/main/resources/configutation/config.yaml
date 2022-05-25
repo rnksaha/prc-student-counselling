@@ -35,3 +35,12 @@ mongo:
   enrolment_collection:
     name: "enrolment_details" 
     fields: "student_id,assigned_id,college_details"
+    
+    
+ping:
+  module: "PAPI Student Counselling"
+  projectVersion: "2.0.0"
+  apiVersion: "2.0.0"
+  env: "DEV"
+  status: "200"
+  message: "Alive"

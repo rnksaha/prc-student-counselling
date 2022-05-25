@@ -95,11 +95,22 @@ output application/json
 			<ee:transform doc:name="Transform Message" doc:id="a986a01e-80f5-4ead-8c5b-d175bba21a2b" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
 {
-	"error_message": error.description,
-	"Required Fee": vars.cDetails.admissionFees
+	"error_message": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="16f3d348-b72f-423f-996e-bf0df21911bd" type="APP:PING_NOT_WORKING">
+			<ee:transform doc:name="Transform Message" doc:id="53560e50-6077-4160-be27-ccdd00ecdc2c" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error_message": error.description
 }]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>

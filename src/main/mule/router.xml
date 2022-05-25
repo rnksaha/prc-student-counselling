@@ -25,6 +25,6 @@
         <flow-ref doc:name="libraryProcessSub_Flow" doc:id="9bc8107b-f575-4dc6-bcea-abf498ff5d49" name="libraryProcessSub_Flow"/>
     </flow>
 	<flow name="get:\ping:papi-student-counselling-config">
-		<flow-ref doc:name="Flow Reference" doc:id="ef948450-015f-4a07-aff6-51033abfc925" name="healthcheckSub_Flow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="ef948450-015f-4a07-aff6-51033abfc925" name="healthCheckSub_Flow"/>
     </flow>
 </mule>
