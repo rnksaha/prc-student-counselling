@@ -185,17 +185,7 @@ output application/json
 			<validation:is-true doc:name="Check admission fees and payment" doc:id="84945a7d-cfb9-467f-8522-ef42416519e7" expression="#[vars.cDetails.admissionFees == vars.vPayload.admissionFees]"/>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4483e51e-2e4f-4e1d-b33c-9ebc3304757e" type="VALIDATION:INVALID_BOOLEAN">
-					<ee:transform doc:name="Transform Message" doc:id="8c7e697a-a60f-4b61-84aa-8478fcd846ba" >
-						<ee:message >
-							<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"message": "Admission fee mismatch! Please pay the correct admission fee",
-	"Required Fee": vars.cDetails.admissionFees
-}]]></ee:set-payload>
-						</ee:message>
-					</ee:transform>
+					<raise-error doc:name="APP:FEE_MISMATCH" doc:id="f3dbadf2-4fdb-4d8d-8508-96a3dfea53da" type="APP:FEE_MISMATCH" description="Admission fee mismatch! Please pay the correct admission fee"/>
 				</on-error-propagate>
 			</error-handler>
 		</try>

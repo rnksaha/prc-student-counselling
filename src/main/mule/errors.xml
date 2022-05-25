@@ -91,5 +91,18 @@ output application/json
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="76f372ef-928e-44e1-b918-eec72d60d278" type="APP:FEE_MISMATCH">
+			<ee:transform doc:name="Transform Message" doc:id="a986a01e-80f5-4ead-8c5b-d175bba21a2b" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"message": error.description,
+	"Required Fee": vars.cDetails.admissionFees
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
 	</error-handler>
 </mule>
