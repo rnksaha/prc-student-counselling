@@ -44,3 +44,4 @@ ping:
   env: "DEV"
   status: "200"
   message: "Alive"
+  x-dependent-ping: "true"

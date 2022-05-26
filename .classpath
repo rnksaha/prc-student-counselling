@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="con" path="MULE_LIB/com.mulesoft.modules/mule-secure-configuration-property-module/1.2.3"/>
 	<classpathentry kind="con" path="MULE_LIB/com.mulesoft.munit/munit-tools/2.3.9"/>
 	<classpathentry kind="con" path="MULE_LIB/com.mulesoft.munit/munit-runner/2.3.9"/>
 	<classpathentry kind="con" path="MULE_LIB/org.mule.modules/mule-apikit-module/1.5.12"/>

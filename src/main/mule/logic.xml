@@ -78,8 +78,9 @@ output application/json
 				<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="APP:STUDENT_ID_NOT_FOUND" />
 			<reconnect />
 				<http:headers><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 				<http:query-params><![CDATA[#[{
 	"id": vars.vPayload.studentId
@@ -93,8 +94,9 @@ output application/json
 			<http:request method="GET" doc:name="getEnrolmentDetails" doc:id="d08eec11-4267-4c17-af76-fbbeeff40096" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.enrolment}" target="vEnrollment">
 				<reconnect />
 				<http:headers><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 				<http:query-params><![CDATA[#[{
 	"id": vars.vPayload.studentId
@@ -125,8 +127,9 @@ output application/json
 		<try doc:name="Try" doc:id="a7dee422-5d82-4c77-a44c-f43a9fdbb6d6" >
 			<http:request method="GET" doc:name="getEnrollmentDetails" doc:id="5ba71b3c-e90b-47dd-b0ad-e4768c360521" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.enrolment}">
 				<http:headers ><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 				<http:query-params ><![CDATA[#[{
 	"id": vars.vPayload.student_id
@@ -142,8 +145,9 @@ output application/json
 		<try doc:name="Try" doc:id="c0596865-23b7-4ace-b77f-bae79efbce03" >
 			<http:request method="GET" doc:name="getAdmissionDetails" doc:id="44e76f26-c5ab-47fb-b6be-18a2afc8400f" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.admission}">
 				<http:headers ><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 				<http:query-params ><![CDATA[#[{
 	"id": vars.vPayload.student_id
@@ -171,8 +175,9 @@ output application/json
 		<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="APP:COLLEGE_ID_NOT_FOUND" />
 					<reconnect />
 				<http:headers><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 				<http:query-params><![CDATA[#[%dw 2.0
 output application/json
@@ -192,8 +197,9 @@ output application/json
 		<http:request method="POST" doc:name="Admit Student" doc:id="6f1659b2-5db6-4c58-8455-8d91f356a0d5" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.admission}">
 			<http:body ><![CDATA[#[vars.vPayload]]]></http:body>
 			<http:headers ><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 		</http:request>
 	</sub-flow>
@@ -202,8 +208,9 @@ output application/json
 		<try doc:name="Try" doc:id="8844f2bf-42bf-4234-bf3c-03044ed06079" >
 			<http:request method="GET" doc:id="852b0026-7ab6-43aa-ac14-f67fb68b3ec2" doc:name="getAdmissionDetails" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.admission}" target="vAdmDetails">
 			<http:headers ><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 				<http:query-params ><![CDATA[#[{
 	"id": vars.vPayload.student_id
@@ -219,8 +226,9 @@ output application/json
 		<try doc:name="Try" doc:id="ffbc7bef-013e-4a24-93df-534986cb753b" >
 			<http:request method="GET" doc:name="getLibraryDetails" doc:id="4b004d06-4277-4810-a04f-bbed884f6411" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.library}">
 				<http:headers ><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 				<http:query-params ><![CDATA[#[{
 	"id": vars.vPayload.student_id
@@ -266,8 +274,9 @@ output application/json
 		<http:request method="POST" doc:name="Issue Library card" doc:id="43315f89-e82f-408f-8b0a-f253cd3eeac3" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.library}">
 			<http:body ><![CDATA[#[vars.vLibData]]]></http:body>
 			<http:headers ><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 		</http:request>
 		<logger level="INFO" doc:name="responsePayload" doc:id="ca34f301-e5e8-4fb7-971e-9b167eefbacb" message="#[payload]"/>
@@ -280,8 +289,9 @@ output application/json
 				<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="APP:COLLEGE_ID_NOT_FOUND" />
 					<reconnect />
 				<http:headers><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 				<http:query-params><![CDATA[#[%dw 2.0
 output application/json
@@ -355,8 +365,9 @@ output application/json
 		<http:request method="POST" doc:name="Add enrolment" doc:id="0cf79447-04ce-415d-b872-b37c387f766b" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.enrolment}">
 			<http:body><![CDATA[#[vars.vRequestEnrolment]]]></http:body>
 				<http:headers><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 		</http:request>
 		<logger level="INFO" doc:name="responsePayload" doc:id="be721c96-e35b-45e4-8b07-3933b91fddf0" message="#[payload]" />
@@ -383,8 +394,9 @@ var dept = vars.vDepartment
 		<http:request method="PATCH" doc:name="Update Availability" doc:id="1f1bea71-c4e8-4ac1-ac81-61eca1a7e72a" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.college}">
 			<http:body><![CDATA[#[vars.vRequestUpdate]]]></http:body>
 				<http:headers><![CDATA[#[{
-	"client_id": vars.vAttributes.headers.client_id,
-	"client_secret": vars.vAttributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 		</http:request>
 		<logger level="INFO" doc:name="responsePayload" doc:id="ecc35360-2e5d-4392-af5a-d5979b737fbe" message="#[payload]" />
@@ -393,9 +405,10 @@ var dept = vars.vDepartment
 		<try doc:name="Try" doc:id="dccb1409-726c-425f-8219-63763fd3ee70" >
 			<http:request method="GET" doc:name="ping-request" doc:id="9a03290f-127e-4549-9c87-41cbbae44295" config-ref="SAPI_HTTP_Request_configuration" path="/ping" target="vDedicatedPing" >
 				<http:headers ><![CDATA[#[{
-	"client_id": attributes.headers.client_id,
-	"client_secret": attributes.headers.client_secret,
-	"x-dependent-ping" : true
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret'),
+	"x-dependent-ping": Mule::p('ping.x-dependent-ping')
 }]]]></http:headers>
 			</http:request>
 			<error-handler >
