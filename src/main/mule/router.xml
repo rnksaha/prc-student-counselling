@@ -4,10 +4,7 @@
     <flow name="papi-student-counselling-main">
         <http:listener config-ref="papi-student-counselling-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers><![CDATA[#[vars.outboundHeaders default {"correlationId": vars.vCorrelationId,
-	"client_id": Mule::p('secure::property.client_id'),
-	"client_secret":Mule::p('secure::property.client_secret'),
-	"x-dependent-ping": Mule::p('ping.x-dependent-ping')}]]]></http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default { }]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
                 <http:body><![CDATA[#[payload]]]></http:body>
