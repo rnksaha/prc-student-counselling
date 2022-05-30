@@ -1,0 +1,6 @@
+{
+	"maskedRequestPath": "/ping",
+	"queryParams": {
+		"x-dependent-ping": "true"
+	}
+}

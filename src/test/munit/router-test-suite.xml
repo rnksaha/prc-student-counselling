@@ -8,6 +8,39 @@
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
 	<munit:config name="router-test-suite.xml" />
+	<munit:test name="routerTestGetPing" doc:id="76b450f3-98cf-4b8d-b16e-e6232cd95851" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b82a5405-74d5-4557-bab9-e5712f3118be" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ping-request" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="getPing" doc:id="423d4422-f49d-40b2-b2c0-4d23f1a24cb3" name="get:\ping:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9211a4e5-aae0-428d-af6c-1c053fc79c06" message="Not Up to the mark" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="routerTestGetPingError" doc:id="0d1676c8-4424-44b3-805d-08e124e01c79" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="cee83364-9b89-4c38-a9d8-c3d06c4fbca8" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ping-request" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APP:PING_NOT_WORKING" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="getPing" doc:id="c8395e93-5684-4030-addf-e65c22037025" name="get:\ping:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d10b44c9-4046-4fc4-b5c5-105934106a0d" message="Not Up to the mark" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
 	<munit:test name="router-test-main" doc:id="3db1accc-2d43-4d9d-b64a-7129332a9a9b" description="Test">
 		<munit:behavior >
 			<munit-tools:mock-when doc:name="apikit-router" doc:id="47bdcbc8-f023-4652-9798-830aabb02e43" processor="apikit:router">
@@ -25,14 +58,6 @@
 			</munit:set-event>
 			<flow-ref doc:name="papi-student-counselling-main" doc:id="a58a8094-f9d5-4a17-a83f-c4166c279a25" name="papi-student-counselling-main"/>
 		</munit:execution>
-	</munit:test>
-	<munit:test name="router-test-suite-get:\ping" doc:id="538b39b9-6e58-41ea-9a30-c5090806bb32" description="Test">
-		<munit:execution >
-			<flow-ref doc:name="ping" doc:id="81712662-0a84-4842-859e-1b8311e82c29" name="get:\ping:papi-student-counselling-config"/>
-		</munit:execution>
-		<munit:validation>
-			<munit-tools:assert-that doc:name="Assert that" doc:id="090cf284-997b-4813-baad-0041478ee50b" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
-		</munit:validation>
 	</munit:test>
 	<munit:test name="router-test-main-error" doc:id="bd117bf2-3cf9-4e65-8b89-882e6a65e4b3" description="Test">
 		<munit:behavior >
@@ -239,6 +264,315 @@
 			<munit-tools:assert-that doc:name="Assert that" doc:id="74af13a0-5455-4efc-9217-0fa596bbb3ac" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
 		</munit:validation>
 	</munit:test>
+	<munit:test name="router-test-suite-post:\admissionprocess" doc:id="3672ea3a-6d1b-42ad-97b3-002f433004e5" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getEnrolmentDetails" doc:id="3fdd8013-d417-414c-aebc-3c217a270659" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getEnrollmentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
 
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getAdmissionDetails" doc:id="c7f4e58e-1ff6-429c-b6fc-fc600ed9ab2c" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAdmissionDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getCollegeDetails" doc:id="73dddd84-1754-42b6-a8b7-12ccff9b26f2" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getCollegeDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Check admission fees and payment" doc:id="b76f33b4-093e-4591-bb68-cbef9b93c288" processor="validation:is-true" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Check admission fees and payment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Admit Student" doc:id="77492c45-91cc-402e-8815-33587bd386a1" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Admit Student" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="setting variables" doc:id="102684b9-6b1b-4a95-aaf9-887ebd842273" >
+				<munit:variables >
+					<munit:variable key="vFlag2" value='{"vFlag2"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/admissionPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="admissionEnrollment" value="#[MunitTools::getResourceAsString('test_modules/admissionEnrollment.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="cDetails" value="#[MunitTools::getResourceAsString('test_modules/admissionCollegeDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="admissionTest" value="#[MunitTools::getResourceAsString('test_modules/admissionTest.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\admissionprocess" doc:id="efada42f-ae3e-4b65-ab53-2ebafa10a4eb" name="post:\admissionprocess:application\json:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a1949a39-66cb-485d-a80b-8bf9190a5d11" is="#[MunitTools::notNullValue()]" expression="#[payload]" message="Not Upto The mark"/>
+		</munit:validation>
+	</munit:test>
 
+<munit:test name="router-test-suite-post:\admissionprocess:notAdmitted" doc:id="f59a2a9e-bcce-4b51-8d87-ece4784a51b8" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getEnrolmentDetails" doc:id="1ef57cb5-9f6e-47cc-9d66-fe3c0242391a" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getEnrollmentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getAdmissionDetails" doc:id="d7c0c634-1df1-4585-a15b-49c0ec807991" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAdmissionDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getCollegeDetails" doc:id="af783ddf-72d3-4fbe-8a0c-5f7f5bbab9f7" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getCollegeDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Check admission fees and payment" doc:id="9ec89278-bec9-4fd1-8d4e-878bd9e42465" processor="validation:is-true" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Check admission fees and payment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Admit Student" doc:id="c9ae4bf4-43c2-48a8-99c8-e74cfb740774" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Admit Student" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="setting variables" doc:id="3dcf8e6a-dbe6-4dcb-8577-d61bb75d36a1" >
+				<munit:variables >
+					<munit:variable key="vFlag2" value='{"vFlag2"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/admissionPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="admissionEnrollment" value="#[MunitTools::getResourceAsString('test_modules/admissionEnrollment.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="cDetails" value="#[MunitTools::getResourceAsString('test_modules/admissionCollegeDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="admissionTest" value="#[MunitTools::getResourceAsString('test_modules/admissionTest.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\admissionprocess" doc:id="02038b9e-8139-4a70-ae90-18447863cda0" name="post:\admissionprocess:application\json:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="b3464019-acdc-4b42-ab0a-b579aa8cd4ca" is="#[MunitTools::notNullValue()]" expression="#[payload]" message="Not Upto The mark"/>
+		</munit:validation>
+	</munit:test>
+
+<munit:test name="router-test-suite-post:\admissionprocess:alreadyAdmitted" doc:id="808b221d-4aaa-4c5b-bf7b-11e713060bd5" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getEnrolmentDetails" doc:id="a84b6a97-bffb-4d71-b0cf-009993e507f2" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getEnrollmentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getAdmissionDetails" doc:id="33d6264f-5848-4c40-9bca-44571b018e80" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAdmissionDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getCollegeDetails" doc:id="83604ec4-d8f0-4b6a-95d3-2055daa75025" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getCollegeDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Check admission fees and payment" doc:id="2e7d16ef-a890-4dd7-af89-c433530993a1" processor="validation:is-true" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Check admission fees and payment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Admit Student" doc:id="7ad00d66-face-4222-8a13-c62dbeb468a3" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Admit Student" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="setting variables" doc:id="e8e9d549-da71-490c-85a7-9ce85f09e0d0" >
+				<munit:variables >
+					<munit:variable key="vFlag2" value='{"vFlag2"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/admissionPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="admissionEnrollment" value="#[MunitTools::getResourceAsString('test_modules/admissionEnrollment.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="cDetails" value="#[MunitTools::getResourceAsString('test_modules/admissionCollegeDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="admissionTest" value="#[MunitTools::getResourceAsString('test_modules/admissionTest.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\admissionprocess" doc:id="96b3eea6-8eef-4fe6-87c9-b44b02be38ae" name="post:\admissionprocess:application\json:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9d560f38-cc9e-4849-9533-3079b967f7ba" is="#[MunitTools::notNullValue()]" expression="#[payload]" message="Not Upto The mark"/>
+		</munit:validation>
+	</munit:test>
+
+<munit:test name="router-test-suite-post:\admissionprocess:feesMismatch" doc:id="ad2c982d-d96b-437b-8bfc-2dd4ca3707ad" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getEnrolmentDetails" doc:id="2058d547-b3ec-4ffe-b8ec-39702e509fc6" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getEnrollmentDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getAdmissionDetails" doc:id="d8ac02f5-ca6f-419d-baf9-3f8ee7b4828f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAdmissionDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getCollegeDetails" doc:id="518291ee-eb8a-4325-ba9c-faf176fa1866" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getCollegeDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Check admission fees and payment" doc:id="e8f8e2d4-7b9c-4bed-876d-5f97d53805bf" processor="validation:is-true">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Check admission fees and payment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="VALIDATION:INVALID_BOOLEAN" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Admit Student" doc:id="3beede94-e5b5-4164-a016-0aadf39302c5" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Admit Student" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="setting variables" doc:id="8492c772-1e2d-4ca9-922c-9a8a99fa72b1" >
+				<munit:variables >
+					<munit:variable key="vFlag2" value='{"vFlag2"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/admissionPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="admissionEnrollment" value="#[MunitTools::getResourceAsString('test_modules/admissionEnrollment.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="cDetails" value="#[MunitTools::getResourceAsString('test_modules/admissionCollegeDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="admissionTest" value="#[MunitTools::getResourceAsString('test_modules/admissionTest.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\admissionprocess" doc:id="61e0072a-2ec2-4c76-add9-2fc96b8bd5c1" name="post:\admissionprocess:application\json:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="e1325371-d753-4043-b0e5-8610c0448d96" is="#[MunitTools::notNullValue()]" expression="#[payload]" message="Not Upto The mark"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="router-test-suite-post:\libregistration" doc:id="98d6838d-c62f-4733-9d04-b7d016ca2086" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getAdmissionDetails" doc:id="254006bd-0341-4835-b326-a31c68017eb4" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAdmissionDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getLibraryDetails" doc:id="a87595c5-c959-4b26-86ce-47ada2b51e30" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getLibraryDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Issue Library card" doc:id="75383760-32a8-4fba-8080-c1509b29875f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Issue Library card" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a29947c1-2843-4f47-8894-5ba08de39ec5" >
+				<munit:variables >
+					<munit:variable key="vFlag3" value='{"vFlag3"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/libraryPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="libraryAdmissionDetails" value="#[MunitTools::getResourceAsString('test_modules/libraryAdmissionDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="libraryTest" value="#[MunitTools::getResourceAsString('test_modules/libraryTest.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vAdmDetails" value="#[MunitTools::getResourceAsString('test_modules/libraryID.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\libregistration" doc:id="f0c96004-0e49-40b2-b1bc-165b65a8cea5" name="post:\libregistration:application\json:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="10defbef-733b-470b-86a5-8de7b36a2cb6" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="router-test-suite-post:\libregistration:alreadyIssued" doc:id="118753d5-3c08-4dbe-9019-7dfaaa0a5618" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getAdmissionDetails" doc:id="2f8501cb-d70a-45f6-8f13-7971970e0b13" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAdmissionDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getLibraryDetails" doc:id="e13d179b-1cb9-4d59-a64c-9abe752bd062" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getLibraryDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Issue Library card" doc:id="536cc987-ab27-4e3b-805b-3e9eaaa54265" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Issue Library card" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1cec4c00-57f3-4057-9d2d-71cdec161e97" >
+				<munit:variables >
+					<munit:variable key="vFlag3" value='{"vFlag3"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/libraryPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="libraryAdmissionDetails" value="#[MunitTools::getResourceAsString('test_modules/libraryAdmissionDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="libraryTest" value="#[MunitTools::getResourceAsString('test_modules/libraryTest.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vAdmDetails" value="#[MunitTools::getResourceAsString('test_modules/libraryID.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\libregistration" doc:id="2540adb3-e833-4c9d-9617-fc8ae421a9a6" name="post:\libregistration:application\json:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="3f4649b4-9f48-4c82-8dd8-06bc4723e1da" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="router-test-suite-post:\libregistration:admissionFeeNotPaid" doc:id="8671453a-ca30-42a4-a132-376570b8ceab" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="getAdmissionDetails" doc:id="4974cdb2-7bfe-4704-ab46-bafd1188d088" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAdmissionDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="getLibraryDetails" doc:id="fa4f6176-4dd3-4094-8bb2-9f06eff5e74b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getLibraryDetails" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Issue Library card" doc:id="c8075b6c-2a2d-4748-abd9-c07dffde037b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Issue Library card" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="4fe23e70-fe76-4e97-9ac2-d03c3e7ad610" >
+				<munit:variables >
+					<munit:variable key="vFlag3" value='{"vFlag3"==True}' encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('test_modules/libraryPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="libraryAdmissionDetails" value="#[MunitTools::getResourceAsString('test_modules/libraryAdmissionDetails.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="libraryTest" value="#[MunitTools::getResourceAsString('test_modules/libraryTest.json')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="vAdmDetails" value="#[MunitTools::getResourceAsString('test_modules/libraryID.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\libregistration" doc:id="90b7d561-82a9-40a2-8113-c2afad362d23" name="post:\libregistration:application\json:papi-student-counselling-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="761517f0-a4ed-444e-987d-90039486629d" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	
+	
+	
 </mule>

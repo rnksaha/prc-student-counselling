@@ -1,0 +1,102 @@
+{
+	"id": "WFA5444650",
+	"name": "Presidency University",
+	"criteria": {
+		"gen": {
+			"maxRank": 97161,
+			"minScore": 87
+		},
+		"sc": {
+			"maxRank": 161044,
+			"minScore": 55
+		},
+		"st": {
+			"maxRank": 340801,
+			"minScore": 45
+		}
+	},
+	"seatsAvailable": 392,
+	"seatsDetails": {
+		"CSE": {
+			"totalSeats": 94,
+			"reserve": {
+				"gen": {
+					"noOfSeat": 24
+				},
+				"sc": {
+					"noOfSeat": 38
+				},
+				"st": {
+					"noOfSeat": 32
+				}
+			}
+		},
+		"ECE": {
+			"totalSeats": 0,
+			"reserve": {
+				"gen": {
+					"noOfSeat": 0
+				},
+				"sc": {
+					"noOfSeat": 0
+				},
+				"st": {
+					"noOfSeat": 0
+				}
+			}
+		},
+		"IT": {
+			"totalSeats": 103,
+			"reserve": {
+				"gen": {
+					"noOfSeat": 33
+				},
+				"sc": {
+					"noOfSeat": 36
+				},
+				"st": {
+					"noOfSeat": 34
+				}
+			}
+		},
+		"CE": {
+			"totalSeats": 100,
+			"reserve": {
+				"gen": {
+					"noOfSeat": 34
+				},
+				"sc": {
+					"noOfSeat": 30
+				},
+				"st": {
+					"noOfSeat": 36
+				}
+			}
+		},
+		"ME": {
+			"totalSeats": 95,
+			"reserve": {
+				"gen": {
+					"noOfSeat": 26
+				},
+				"sc": {
+					"noOfSeat": 33
+				},
+				"st": {
+					"noOfSeat": 36
+				}
+			}
+		}
+	},
+	"address": {
+		"street": "01 Helena Circle",
+		"city": "Oakland",
+		"state": "California",
+		"postalCode": "654654"
+	},
+	"contactDetails": {
+		"email": "vbyron0@hubpages.com",
+		"phone": "033-22901931"
+	},
+	"admissionFees": 5000
+}

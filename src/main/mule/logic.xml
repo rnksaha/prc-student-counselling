@@ -172,7 +172,6 @@ output application/json
 	</sub-flow>
 	<sub-flow name="requestAdmissionSub_Flow" doc:id="3f9b9574-6385-4b36-b9b7-24d707aca059" >
 		<http:request method="GET" doc:name="getCollegeDetails" doc:id="cf5f7887-188c-455c-9c52-673c419e1544" config-ref="SAPI_HTTP_Request_configuration" path="${sapi.endpoints.college}" target="cDetails" outputMimeType="application/json">
-		<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="APP:COLLEGE_ID_NOT_FOUND" />
 					<reconnect />
 				<http:headers><![CDATA[#[{
 	"correlationId": vars.vCorrelationId,
@@ -260,11 +259,10 @@ output application/json
 output application/json
 ---
 {
-	"library_id": "LIB" ++ vars.vAdmDetails.assigned_id as String,
+	"library_id": "LIB" ++ vars.vAdmDetails.assigned_id,
     "student_id": vars.vPayload.student_id,
     "assigned_id": vars.vAdmDetails.assigned_id,
     "college_details": {
-
       "college_id": vars.vAdmDetails.college_details.college_id
       
   }

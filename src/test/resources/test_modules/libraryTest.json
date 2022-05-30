@@ -1,0 +1,11 @@
+{
+	"message": "Library card issued successfully!",
+	"your library card details": {
+		"library_id": "LIBCSE2",
+		"student_id": "2136308975",
+		"assigned_id": "CSE2",
+		"college_details": {
+			"college_id": "WFA5444650"
+		}
+	}
+}
