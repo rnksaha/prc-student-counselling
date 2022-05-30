@@ -15,9 +15,6 @@ http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/
 		<flow-ref doc:name="checkEnrolmentDetailsSub_Flow" doc:id="dc00adcc-3bba-4031-a6e9-e76e38e6f07d" name="checkEnrolmentDetailsSub_Flow"/>
 		<flow-ref doc:name="checkIndexesSub_Flow" doc:id="1caf87f4-6769-4042-a069-4167aa3e95a9" name="checkIndexesSub_Flow"/>
 		<os:retrieve doc:name="Retrieve assigned_id" doc:id="e743eed9-1017-428d-8511-bd29c454aeba" key="assigned_id" objectStore="Object_store" target="assigned_id">
-			<error-mapping sourceType="OS:INVALID_KEY" targetType="APP:h" />
-			<error-mapping sourceType="OS:KEY_NOT_FOUND" targetType="APP:g" />
-			<error-mapping sourceType="OS:STORE_NOT_AVAILABLE" targetType="APP:f" />
 			<os:default-value ><![CDATA[1]]></os:default-value>
 		</os:retrieve>
 		<logger level="INFO" doc:name="assigned_id" doc:id="d093c198-91d3-459b-b3cc-24fb5fadd7bc" message="#[payload]"/>
