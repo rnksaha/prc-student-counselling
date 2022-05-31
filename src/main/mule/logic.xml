@@ -185,8 +185,8 @@ output application/json
 		<try doc:name="Try" doc:id="493db21a-ca53-40f9-a904-5afe04bfd972" >
 			<validation:is-true doc:name="Check admission fees and payment" doc:id="84945a7d-cfb9-467f-8522-ef42416519e7" expression="#[vars.cDetails.admissionFees == vars.vPayload.admissionFees]"/>
 			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4483e51e-2e4f-4e1d-b33c-9ebc3304757e" type="VALIDATION:INVALID_BOOLEAN">
-					<raise-error doc:name="APP:FEE_MISMATCH" doc:id="f3dbadf2-4fdb-4d8d-8508-96a3dfea53da" type="APP:FEE_MISMATCH" description="Admission fee mismatch! Please pay the correct admission fee i.e #[vars.cDetails.admissionFees]"/>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1a9bd7b7-2d65-4f43-a314-248d8b029ec6" type="VALIDATION:INVALID_BOOLEAN">
+					<raise-error doc:name="APP:FEE_MISMATCH" doc:id="f3dbadf2-4fdb-4d8d-8508-96a3dfea53da" type="APP:FEE_MISMATCH" description='#["Admission fee mismatch! Please pay the correct admission fee i.e " ++ vars.cDetails.admissionFees as String default "NOT FOUND"]' />
 				</on-error-propagate>
 			</error-handler>
 		</try>
