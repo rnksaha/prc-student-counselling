@@ -11,6 +11,7 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
 	<sub-flow name="enrollerSub_Flow" doc:id="ef304f71-ecf4-4238-960c-7c8e2159bae6" >
 		<logger level="INFO" doc:name="flowStartLogger" doc:id="4b010208-9f7c-44f5-a317-41d0de6f0f14" message="Flow started successfully"/>
+		<flow-ref doc:name="collegeLimitSub_Flow" doc:id="e6bffe4d-0f41-42d6-bbbc-2041ef533597" name="collegeLimitSub_Flow"/>
 		<flow-ref doc:name="getStudentDetailsSub_Flow" doc:id="3256a612-9922-4f52-b698-c5d9c998a9e8" name="getStudentDetailsSub_Flow" />
 		<flow-ref doc:name="checkEnrolmentDetailsSub_Flow" doc:id="dc00adcc-3bba-4031-a6e9-e76e38e6f07d" name="checkEnrolmentDetailsSub_Flow"/>
 		<flow-ref doc:name="checkIndexesSub_Flow" doc:id="1caf87f4-6769-4042-a069-4167aa3e95a9" name="checkIndexesSub_Flow"/>
@@ -433,6 +434,22 @@ output application/json
   ]]></ee:set-payload>
 			</ee:message>
 			<ee:variables />
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="collegeLimitSub_Flow" doc:id="4751df75-1014-4a9b-9c12-ad85f4ecd83e" >
+		<validation:is-true doc:name="collegeChoices" doc:id="f55712b5-0264-4a5b-9a25-5186965a1c3a" expression="#[sizeOf(vars.vPayload.collegeChoices) &gt;= 3]" message="Enter atleast 3 college choices" />
+		<ee:transform doc:name="vPayload" doc:id="947ef133-a3e5-404b-9d2f-0438ba3eea0b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import slice from dw::core::Arrays
+output application/json
+---
+vars.vPayload update {
+        case collegeChoices at .collegeChoices-> slice(vars.vPayload.collegeChoices,0,3)
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
 		</ee:transform>
 	</sub-flow>
 </mule>
